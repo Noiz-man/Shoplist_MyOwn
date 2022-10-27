@@ -7,8 +7,8 @@ import com.example.shoplist_myown.Domain.ShoplistRepositiry
 import kotlin.random.Random
 
 object ShoplistRepositoryImpl: ShoplistRepositiry {
-    val shoplist = sortedSetOf<Shopitem>({q1, q2 -> q1.id.compareTo(q2.id)})
-    var shoplist_LD = MutableLiveData<List<Shopitem>>()
+    val shoplist = sortedSetOf<Shopitem>({o1, o2 -> o1.id.compareTo(o2.id)})
+    val shoplist_LD = MutableLiveData<List<Shopitem>>()
     var autoincrement = 0
 
     init {
@@ -19,7 +19,9 @@ object ShoplistRepositoryImpl: ShoplistRepositiry {
     }
 
     override fun addShopitem(item: Shopitem) {
-        item.id = autoincrement++
+        if (item.id == Shopitem.UNDEFINED_ID) {
+            item.id = autoincrement++
+        }
         shoplist.add(item)
         updateShoplist()
     }

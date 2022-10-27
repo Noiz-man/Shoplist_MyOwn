@@ -17,7 +17,7 @@ class ShoplistViewModel: ViewModel() {
     val editShopitemUseCase = EditShopitemUseCase(repositiry)
     val getShoplistUseCase = GetShoplistUseCase(repositiry)
 
-    var shoplist = getShoplistUseCase.getShoplist()
+    val shoplist = getShoplistUseCase.getShoplist()
 
     fun deleteShopitem(item: Shopitem) {
         deleteShopitemUseCase.deleteShopitem(item)
