@@ -12,8 +12,8 @@ import com.example.shoplist_myown.R
 
 class ShoplistAdapter: ListAdapter<Shopitem, ShoplistAdapter.ShoplistViewHolder>(ShoplistDiffCallback()) {
 
-        val onShopitemClickListener: ((Shopitem) -> Unit)? = null
-        val onShopitemLongClickListener: ((Shopitem) -> Unit)? = null
+        var onShopitemClickListener: ((Shopitem) -> Unit)? = null
+        var onShopitemLongClickListener: ((Shopitem) -> Unit)? = null
 
     class ShoplistViewHolder(itemView: View) : ViewHolder(itemView) {
         val name = itemView.findViewById<TextView>(R.id.tv_name)
@@ -22,7 +22,10 @@ class ShoplistAdapter: ListAdapter<Shopitem, ShoplistAdapter.ShoplistViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoplistViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.active_item, parent, false)
+        val state = if (viewType == ACTIVE) {
+            R.layout.active_item
+        } else R.layout.inactive_item
+        val view = LayoutInflater.from(parent.context).inflate(state, parent, false)
         return ShoplistViewHolder(view)
     }
 
@@ -37,5 +40,17 @@ class ShoplistAdapter: ListAdapter<Shopitem, ShoplistAdapter.ShoplistViewHolder>
             onShopitemLongClickListener?.invoke(shopitem)
             true
         }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when(getItem(position).state) {
+            true -> ACTIVE
+            false -> INACTIVE
+        }
+    }
+
+    companion object{
+        val ACTIVE = 1
+        val INACTIVE = 0
     }
 }

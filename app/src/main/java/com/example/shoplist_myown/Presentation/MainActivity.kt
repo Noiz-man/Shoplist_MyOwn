@@ -15,13 +15,31 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        rv_shoplist = findViewById(R.id.rv_shoplist)
-        shoplistadapter = ShoplistAdapter()
-        rv_shoplist.adapter = shoplistadapter
+        setupRecyclerView()
         viewModel = ViewModelProvider(this)[ShoplistViewModel::class.java]
         viewModel.shoplist.observe(this) {
             shoplistadapter.submitList(it)
         }
 
+    }
+
+    fun setupRecyclerView() {
+        rv_shoplist = findViewById(R.id.rv_shoplist)
+        shoplistadapter = ShoplistAdapter()
+        rv_shoplist.adapter = shoplistadapter
+        onClickListener()
+        onLongClickListener()
+    }
+
+    fun onClickListener() {
+        shoplistadapter.onShopitemClickListener = {
+            viewModel.editShopitemState(it)
+        }
+    }
+
+    fun onLongClickListener() {
+        shoplistadapter.onShopitemLongClickListener = {
+            viewModel.deleteShopitem(it)
+        }
     }
 }
