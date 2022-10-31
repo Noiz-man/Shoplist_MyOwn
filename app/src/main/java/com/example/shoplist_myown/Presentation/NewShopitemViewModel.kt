@@ -1,60 +1,96 @@
 package com.example.shoplist_myown.Presentation
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoplist_myown.Data.ShoplistRepositoryImpl
-import com.example.shoplist_myown.Domain.AddShopitemUseCase
-import com.example.shoplist_myown.Domain.EditShopitemUseCase
-import com.example.shoplist_myown.Domain.GetShopitemByID
-import com.example.shoplist_myown.Domain.Shopitem
+import com.example.shoplist_myown.Domain.*
 
 class NewShopitemViewModel: ViewModel() {
     private val repositiry = ShoplistRepositoryImpl
 
     val addShopitemUseCase = AddShopitemUseCase(repositiry)
     val editShopitemUseCase = EditShopitemUseCase(repositiry)
-    val getShopitemByID = GetShopitemByID(repositiry)
+    val getShopitemByIDUseCase = GetShopitemByID(repositiry)
 
-    fun addShopitem(inputname: String?, inputcount: String?) {
-        val name = parseName(inputname)
-        val count = parseCount(inputcount)
-        val validData = validateData(name, count)
-        if (validData) {
+    private val _errorName = MutableLiveData<Boolean>()
+    val errorName: LiveData<Boolean>
+        get() = _errorName
+
+    private val _errorCount = MutableLiveData<Boolean>()
+    val errorCount: LiveData<Boolean>
+        get() = _errorName
+
+    private val _shopitem = MutableLiveData<Shopitem>()
+    val shopitem: LiveData<Shopitem>
+        get() = _shopitem
+
+    private val _closeWindow = MutableLiveData<Unit>()
+    val closeWindow: LiveData<Unit>
+        get() = _closeWindow
+
+    fun addShopitem(inputName: String?, inputCount: String?) {
+        val name = parseInputName(inputName)
+        val count = parseInputCount(inputCount)
+        if (validData(name, count)) {
             val item = Shopitem(name, count, true)
             addShopitemUseCase.addShopitem(item)
+            closeWindow()
         }
     }
 
-    fun editShopitem(inputname: String?, inputcount: String?) {
-        val name = parseName(inputname)
-        val count = parseCount(inputcount)
-        val validData = validateData(name, count)
-        if (validData) {
-            val item = Shopitem(name, count, true)
-            editShopitemUseCase.editShopitem(item)
+    fun editShopitem(inputName: String?, inputCount: String?) {
+        val name = parseInputName(inputName)
+        val count = parseInputCount(inputCount)
+        if (validData(name, count)) {
+            _shopitem.value?.let {
+                val item = it.copy(name = name, count = count)
+                editShopitemUseCase.editShopitem(item)
+                closeWindow()
+            }
         }
     }
 
-    private fun parseName(string: String?): String {
-        return string?.trim() ?: ""
+    fun getShopitemByID(id: Int) {
+        val item = getShopitemByIDUseCase.getShopitemByID(id)
+        _shopitem.value = item
     }
 
-    private fun parseCount(string: String?): Int {
-        return try { string?.trim()?.toInt() ?: 0
+    private fun parseInputName(inputName: String?): String {
+        return inputName?.trim() ?: ""
+    }
+
+    private fun parseInputCount(inputCount: String?): Int {
+        return try {
+            inputCount?.trim()?.toInt() ?: 0
         } catch (e: Exception) {
             0
         }
     }
 
-    private fun validateData(name: String, count: Int): Boolean {
+    fun validData(name: String, count: Int): Boolean {
         var result = true
         if (name.isBlank()) {
-            // TODO: ошибка ввода имени
+            _errorName.value = true
             result = false
         }
         if (count <= 0) {
-            // TODO: ошибка ввода количества
+            _errorCount.value = true
             result = false
         }
         return result
     }
+
+    fun resetErrorName() {
+        _errorName.value = false
+    }
+
+    fun resetErrorCount() {
+        _errorCount.value = false
+    }
+
+    private fun closeWindow() {
+        _closeWindow.value = Unit
+    }
+
 }
