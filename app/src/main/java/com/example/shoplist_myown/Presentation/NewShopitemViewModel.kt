@@ -19,7 +19,7 @@ class NewShopitemViewModel: ViewModel() {
 
     private val _errorCount = MutableLiveData<Boolean>()
     val errorCount: LiveData<Boolean>
-        get() = _errorName
+        get() = _errorCount
 
     private val _shopitem = MutableLiveData<Shopitem>()
     val shopitem: LiveData<Shopitem>

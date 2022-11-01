@@ -2,11 +2,12 @@ package com.example.shoplist_myown.Presentation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.example.shoplist_myown.Domain.Shopitem
 import com.example.shoplist_myown.R
@@ -26,10 +27,54 @@ class NewShopitem_Activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_shopitem)
         parseIntent()
-        initViews()
         viewModel = ViewModelProvider(this)[NewShopitemViewModel::class.java]
-
+        initViews()
+        addTextChangeTextListener()
+        luanchRightMode()
     }
+
+    private fun luanchRightMode() {
+        when(screenmode) {
+            MODE_ADD -> launchAddMode()
+            MODE_EDIT -> launchEditMode()
+        }
+        viewModel.errorCount.observe(this){
+            val message = if (it){
+                getString(R.string.error_input_cout)
+            } else null
+            til_count.error = message
+        }
+
+        viewModel.errorName.observe(this){
+            val message = if (it){
+                getString(R.string.error_input_name)
+            } else null
+            til_name.error = message
+        }
+
+        viewModel.closeWindow.observe(this){
+            finish()
+        }
+    }
+
+    fun launchEditMode() {
+        viewModel.getShopitemByID(shopitemID)
+        viewModel.shopitem.observe(this){
+            et_name.setText(it.name)
+            et_count.setText(it.count.toString())
+        }
+        buttonAdd.setOnClickListener {
+            viewModel.editShopitem(et_name.text?.toString(), et_count.text?.toString())
+        }
+    }
+
+    fun launchAddMode() {
+        buttonAdd.setOnClickListener {
+            viewModel.addShopitem(et_name.text?.toString(), et_count.text?.toString())
+        }
+    }
+
+
 
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_MODE)) {
@@ -75,5 +120,31 @@ class NewShopitem_Activity : AppCompatActivity() {
             intent.putExtra(EXTRA_ITEM_ID, id)
             return intent
         }
+    }
+
+    private fun addTextChangeTextListener() {
+        et_name.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.resetErrorName()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
+
+        et_count.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.resetErrorCount()
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+        })
     }
 }
