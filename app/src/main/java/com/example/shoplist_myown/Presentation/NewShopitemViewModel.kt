@@ -9,7 +9,7 @@ import com.example.shoplist_myown.Domain.EditShopitemUseCase
 import com.example.shoplist_myown.Domain.GetShopitemByID
 import com.example.shoplist_myown.Domain.Shopitem
 
-class NewShopitemViewModel: ViewModel() {
+class NewShopitemViewModel : ViewModel() {
 
     val repositiry = ShoplistRepositoryImpl
     val addShopitemUseCase = AddShopitemUseCase(repositiry)
@@ -20,19 +20,30 @@ class NewShopitemViewModel: ViewModel() {
     val shopitem: LiveData<Shopitem>
         get() = _shopitem
 
+    val _errorInputName = MutableLiveData<Boolean>()
+    val errorInputName: LiveData<Boolean>
+        get() = _errorInputName
+
+    val _errorInputCount = MutableLiveData<Boolean>()
+    val errorInputCount: LiveData<Boolean>
+        get() = _errorInputCount
+
+    val _closeWindow = MutableLiveData<Unit>()
+    val closeWindow: LiveData<Unit>
+        get() = _closeWindow
 
 
-    private fun addShopitem(name: String?, count: String?) {
+    fun addShopitem(name: String?, count: String?) {
         val parsename = parseName(name)
         val parseCount = parseCount(count)
         if (validData(parsename, parseCount)) {
             val item = Shopitem(parsename, parseCount, true)
             addShopitemUseCase.addShopitem(item)
         }
-        // TODO закрыть окно
+        closeWindow()
     }
 
-    private fun editAhopitem(name: String?, count: String?) {
+    fun editAhopitem(name: String?, count: String?) {
         val parsename = parseName(name)
         val parseCount = parseCount(count)
         if (validData(parsename, parseCount)) {
@@ -41,14 +52,14 @@ class NewShopitemViewModel: ViewModel() {
                 editShopitemUseCase.editShopitem(item)
             }
         }
-        // TODO закрыть окно
+        closeWindow()
     }
 
-    private fun getItemByID(id: Int){
+    fun getItemByID(id: Int) {
         _shopitem.value = getShopitemByID.getShopitemByID(id)
     }
 
-    private fun parseName(name: String?): String{
+    private fun parseName(name: String?): String {
         return name?.trim() ?: ""
     }
 
@@ -64,16 +75,27 @@ class NewShopitemViewModel: ViewModel() {
     private fun validData(name: String, count: Int): Boolean {
         var result = true
         if (name.isBlank()) {
-            // TODO ошибка ввода имени
+            _errorInputName.value = true
             result = false
         }
         if (count <= 0) {
-            // TODO ошибка ввода кол-ва
+            _errorInputCount.value = true
             result = false
         }
         return false
     }
 
+    fun resetErrorInputName() {
+        _errorInputName.value = false
+    }
+
+    fun resetErrorInputCount() {
+        _errorInputCount.value = false
+    }
+
+    fun closeWindow() {
+        _closeWindow.value = Unit
+    }
 
 }
 
