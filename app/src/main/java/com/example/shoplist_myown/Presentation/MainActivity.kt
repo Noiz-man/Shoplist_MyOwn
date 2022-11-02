@@ -8,11 +8,13 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.example.shoplist_myown.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: ShoplistViewModel
     private lateinit var rv_shoplist: RecyclerView
     private lateinit var shoplistadapter: ShoplistAdapter
+    private lateinit var fab_add: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +25,11 @@ class MainActivity : AppCompatActivity() {
             shoplistadapter.submitList(it)
         }
 
+        fab_add = findViewById(R.id.floatingActionButton)
+        fab_add.setOnClickListener {
+            intent = NewShopitem_Activity.intentAdd(this)
+            startActivity(intent)
+        }
     }
 
     fun setupRecyclerView() {
@@ -42,7 +49,8 @@ class MainActivity : AppCompatActivity() {
 
     fun onLongClickListener() {
         shoplistadapter.onShopitemLongClickListener = {
-            viewModel.deleteShopitem(it)
+            intent = NewShopitem_Activity.intentEdit(this, it.id)
+            startActivity(intent)
         }
     }
 
