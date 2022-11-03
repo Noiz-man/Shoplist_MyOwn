@@ -33,7 +33,7 @@ class NewShopitem_Activity : AppCompatActivity() {
         choiseMode()
         errors()
         resetErrors()
-
+        closeActivity()
 
     }
 
@@ -49,9 +49,6 @@ class NewShopitem_Activity : AppCompatActivity() {
                 "Ошибка ввода количества"
             } else null
             til_count.error = message
-        }
-        viewModel.closeWindow.observe(this){
-            finish()
         }
     }
 
@@ -145,6 +142,12 @@ class NewShopitem_Activity : AppCompatActivity() {
             intent.putExtra(EXTRA_MODE, MODE_EDIT)
             intent.putExtra(SHOP_ITEM_ID, id)
             return intent
+        }
+    }
+
+    private fun closeActivity() {
+        viewModel.closeWindow.observe(this){
+            finish()
         }
     }
 }

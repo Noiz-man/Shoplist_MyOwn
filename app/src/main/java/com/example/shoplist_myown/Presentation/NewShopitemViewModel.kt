@@ -39,7 +39,9 @@ class NewShopitemViewModel : ViewModel() {
         if (validData(parsename, parseCount)) {
             val item = Shopitem(parsename, parseCount, true)
             addShopitemUseCase.addShopitem(item)
+            closeWindow()
         }
+
     }
 
     fun editAhopitem(name: String?, count: String?) {
@@ -50,6 +52,7 @@ class NewShopitemViewModel : ViewModel() {
                 val item = it.copy(parsename, parseCount)
                 editShopitemUseCase.editShopitem(item)
             }
+            closeWindow()
         }
     }
 
