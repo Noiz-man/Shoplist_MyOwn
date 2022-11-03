@@ -39,14 +39,19 @@ class NewShopitem_Activity : AppCompatActivity() {
 
     private fun errors() {
         viewModel.errorInputName.observe(this){
-            if(it) {
-                til_name.error = "Ошибка ввода имени"
+            val message = if(it) {
+                "Ошибка ввода имени"
             } else null
+            til_name.error = message
         }
         viewModel.errorInputCount.observe(this){
-            if (it) {
-                til_count.error = "Ошибка ввода количества"
+            val message = if (it) {
+                "Ошибка ввода количества"
             } else null
+            til_count.error = message
+        }
+        viewModel.closeWindow.observe(this){
+            finish()
         }
     }
 
@@ -140,12 +145,6 @@ class NewShopitem_Activity : AppCompatActivity() {
             intent.putExtra(EXTRA_MODE, MODE_EDIT)
             intent.putExtra(SHOP_ITEM_ID, id)
             return intent
-        }
-    }
-
-    private fun closeWindow() {
-        viewModel.closeWindow.observe(this){
-            finish()
         }
     }
 }
