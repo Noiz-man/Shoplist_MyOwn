@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
@@ -28,13 +30,63 @@ class NewShopitem_Activity : AppCompatActivity() {
         parseIntent()
         viewModel = ViewModelProvider(this)[NewShopitemViewModel::class.java]
         initViews()
+        choiseMode()
+        errors()
+        resetErrors()
 
+
+    }
+
+    private fun errors() {
+        viewModel.errorInputName.observe(this){
+            if(it) {
+                til_name.error = "Ошибка ввода имени"
+            }
+        }
+        viewModel.errorInputCount.observe(this){
+            if (it) {
+                til_count.error = "Ошибка ввода количества"
+            }
+        }
+    }
+
+    private fun resetErrors() {
+        et_name.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.resetErrorInputName()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+
+        })
+
+        et_count.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.resetErrorInputCount()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+
+        })
+    }
+
+
+    private fun choiseMode() {
+        when(screenmode) {
+            MODE_ADD -> addNewShopitem()
+            MODE_EDIT -> editShopitem()
+        }
     }
 
     private fun addNewShopitem() {
         btn_Save.setOnClickListener {
             viewModel.addShopitem(et_name.text.toString(), et_count.text.toString())
         }
+        closeWindow()
     }
 
     private fun editShopitem() {
@@ -46,6 +98,7 @@ class NewShopitem_Activity : AppCompatActivity() {
         btn_Save.setOnClickListener {
             viewModel.editAhopitem(et_name.text.toString(), et_count.text.toString())
         }
+        closeWindow()
     }
 
     private fun initViews() {
@@ -68,6 +121,7 @@ class NewShopitem_Activity : AppCompatActivity() {
         if (screenmode == MODE_EDIT) {
             shopitemID = intent.getIntExtra(SHOP_ITEM_ID, Shopitem.UNDEFINED_ID)
         }
+
     }
 
     companion object {
@@ -88,6 +142,12 @@ class NewShopitem_Activity : AppCompatActivity() {
             intent.putExtra(EXTRA_MODE, MODE_EDIT)
             intent.putExtra(SHOP_ITEM_ID, id)
             return intent
+        }
+    }
+
+    private fun closeWindow() {
+        viewModel.closeWindow.observe(this){
+            finish()
         }
     }
 }
