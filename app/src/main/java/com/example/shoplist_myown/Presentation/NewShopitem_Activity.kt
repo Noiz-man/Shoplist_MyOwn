@@ -41,12 +41,12 @@ class NewShopitem_Activity : AppCompatActivity() {
         viewModel.errorInputName.observe(this){
             if(it) {
                 til_name.error = "Ошибка ввода имени"
-            }
+            } else null
         }
         viewModel.errorInputCount.observe(this){
             if (it) {
                 til_count.error = "Ошибка ввода количества"
-            }
+            } else null
         }
     }
 
@@ -84,21 +84,19 @@ class NewShopitem_Activity : AppCompatActivity() {
 
     private fun addNewShopitem() {
         btn_Save.setOnClickListener {
-            viewModel.addShopitem(et_name.text.toString(), et_count.text.toString())
+            viewModel.addShopitem(et_name.text?.toString(), et_count.text?.toString())
         }
-        closeWindow()
     }
 
     private fun editShopitem() {
         viewModel.getItemByID(shopitemID)
         viewModel.shopitem.observe(this) {
             et_name.setText(it.name)
-            et_count.setText(it.count)
+            et_count.setText(it.count.toString())
         }
         btn_Save.setOnClickListener {
-            viewModel.editAhopitem(et_name.text.toString(), et_count.text.toString())
+            viewModel.editAhopitem(et_name.text?.toString(), et_count.text?.toString())
         }
-        closeWindow()
     }
 
     private fun initViews() {
