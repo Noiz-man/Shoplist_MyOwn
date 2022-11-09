@@ -20,24 +20,30 @@ class NewShopitem_Activity : AppCompatActivity() {
 //    private lateinit var et_count: EditText
 //    private lateinit var buttonAdd: Button
 //    private lateinit var viewModel: NewShopitemViewModel
-//    private var screenmode = UNKNOWN_SCREEN_MODE
-//    private var shopitemID = Shopitem.UNDEFINED_ID
+    private var screenmode = UNKNOWN_SCREEN_MODE
+    private var shopitemID = Shopitem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_shopitem)
-//        parseIntent()
+        parseIntent()
 //        viewModel = ViewModelProvider(this)[NewShopitemViewModel::class.java]
 //        initViews()
 //        addTextChangeTextListener()
-//        luanchRightMode()
+        luanchRightMode()
     }
 
-//    private fun luanchRightMode() {
-//        when(screenmode) {
-//            MODE_ADD -> launchAddMode()
-//            MODE_EDIT -> launchEditMode()
-//        }
+    private fun luanchRightMode() {
+        val fragment = when(screenmode) {
+            MODE_ADD -> ShoplistFragment.newInstanseAddTem()
+            MODE_EDIT -> ShoplistFragment.newInstanseEditTem(shopitemID)
+            else -> throw RuntimeException("Intent has no mode $screenmode")
+        }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shopitem_container, fragment)
+            .commit()
+
 //        viewModel.errorCount.observe(this){
 //            val message = if (it){
 //                getString(R.string.error_input_cout)
@@ -55,7 +61,7 @@ class NewShopitem_Activity : AppCompatActivity() {
 //        viewModel.closeWindow.observe(this){
 //            finish()
 //        }
-//    }
+    }
 //
 //    fun launchEditMode() {
 //        viewModel.getShopitemByID(shopitemID)
@@ -76,22 +82,22 @@ class NewShopitem_Activity : AppCompatActivity() {
 //
 //
 //
-//    private fun parseIntent() {
-//        if (!intent.hasExtra(EXTRA_MODE)) {
-//            throw RuntimeException("Intent has no $EXTRA_MODE")
-//        }
-//        val mode = intent.getStringExtra(EXTRA_MODE)
-//        if (mode != MODE_ADD && mode != MODE_EDIT) {
-//            throw RuntimeException("Intent has no mode $mode")
-//        }
-//        screenmode = mode
-//        if (screenmode == MODE_EDIT) {
-//            if (!intent.hasExtra(EXTRA_ITEM_ID)){
-//                throw RuntimeException("Intent has no itemID")
-//                }
-//            shopitemID = intent.getIntExtra(EXTRA_ITEM_ID, Shopitem.UNDEFINED_ID)
-//        }
-//    }
+    private fun parseIntent() {
+        if (!intent.hasExtra(EXTRA_MODE)) {
+            throw RuntimeException("Intent has no $EXTRA_MODE")
+        }
+        val mode = intent.getStringExtra(EXTRA_MODE)
+        if (mode != MODE_ADD && mode != MODE_EDIT) {
+            throw RuntimeException("Intent has no mode $mode")
+        }
+        screenmode = mode
+        if (screenmode == MODE_EDIT) {
+            if (!intent.hasExtra(EXTRA_ITEM_ID)){
+                throw RuntimeException("Intent has no itemID")
+                }
+            shopitemID = intent.getIntExtra(EXTRA_ITEM_ID, Shopitem.UNDEFINED_ID)
+        }
+    }
 //
 //    private fun initViews() {
 //        til_name = findViewById(R.id.til_name)
@@ -121,6 +127,8 @@ class NewShopitem_Activity : AppCompatActivity() {
             return intent
         }
     }
+
+
 //
 //    private fun addTextChangeTextListener() {
 //        et_name.addTextChangedListener(object : TextWatcher{
