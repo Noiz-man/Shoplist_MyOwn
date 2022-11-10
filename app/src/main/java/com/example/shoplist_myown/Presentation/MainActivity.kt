@@ -2,6 +2,8 @@ package com.example.shoplist_myown.Presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -13,6 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rv_shoplist: RecyclerView
     private lateinit var shoplistadapter: ShoplistAdapter
     private lateinit var fab: FloatingActionButton
+    private var fragmentContainerView: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,11 +26,27 @@ class MainActivity : AppCompatActivity() {
             shoplistadapter.submitList(it)
         }
 
+        fragmentContainerView = findViewById(R.id.fragmentContainerView)
+
         fab = findViewById(R.id.floatingActionButton)
         fab.setOnClickListener {
-            val intent = NewShopitem_Activity.intentAdd(this)
-            startActivity(intent)
+            if (isScreenPortrait()) {
+                val intent = NewShopitem_Activity.intentAdd(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ShoplistFragment.newInstanseAddTem())
+            }
         }
+    }
+
+    private fun isScreenPortrait(): Boolean{
+        return fragmentContainerView == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.fragmentContainerView, fragment)
+            .commit()
     }
 
     fun setupRecyclerView() {
@@ -47,8 +66,12 @@ class MainActivity : AppCompatActivity() {
 
     fun onLongClickListener() {
         shoplistadapter.onShopitemLongClickListener = {
-            val intent = NewShopitem_Activity.intentEdit(this, it.id)
-            startActivity(intent)
+            if (isScreenPortrait()) {
+                val intent = NewShopitem_Activity.intentEdit(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ShoplistFragment.newInstanseEditTem(it.id))
+            }
         }
     }
 
