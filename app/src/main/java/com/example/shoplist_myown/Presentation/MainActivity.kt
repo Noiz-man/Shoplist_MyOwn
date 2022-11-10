@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
     private fun launchFragment(fragment: Fragment) {
         supportFragmentManager.popBackStack()
         supportFragmentManager.beginTransaction()
-            .add(R.id.fragmentContainerView, fragment)
+            .replace(R.id.fragmentContainerView, fragment)
             .addToBackStack(null)
             .commit()
     }
