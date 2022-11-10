@@ -13,17 +13,18 @@ import com.example.shoplist_myown.Domain.Shopitem
 import com.example.shoplist_myown.R
 import com.google.android.material.textfield.TextInputLayout
 
-class NewShopitem_Activity : AppCompatActivity() {
+class NewShopitem_Activity : AppCompatActivity(),ShoplistFragment.OnFinishedFragmentListener {
     private var screenmode = UNKNOWN_SCREEN_MODE
     private var shopitemID = Shopitem.UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_shopitem)
+        parseIntent()
         if (savedInstanceState == null){
             launchRightMode()
         }
-        parseIntent()
+
 
     }
 
@@ -75,5 +76,9 @@ class NewShopitem_Activity : AppCompatActivity() {
             intent.putExtra(EXTRA_ITEM_ID, id)
             return intent
         }
+    }
+
+    override fun finishedFragment() {
+        finish()
     }
 }

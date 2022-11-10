@@ -1,5 +1,6 @@
 package com.example.shoplist_myown.Presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -24,6 +25,14 @@ class ShoplistFragment : Fragment() {
     private lateinit var et_count: EditText
     private lateinit var buttonAdd: Button
     private lateinit var viewModel: NewShopitemViewModel
+    private lateinit var onFinishedFragmentListener: OnFinishedFragmentListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFinishedFragmentListener) {
+            onFinishedFragmentListener = context
+        } else throw RuntimeException("Need to implement inteface OnFinishedFragmentListener")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +77,7 @@ class ShoplistFragment : Fragment() {
         }
 
         viewModel.closeWindow.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onFinishedFragmentListener.finishedFragment()
         }
     }
 
@@ -167,5 +176,9 @@ class ShoplistFragment : Fragment() {
             override fun afterTextChanged(s: Editable?) {
             }
         })
+    }
+
+    interface OnFinishedFragmentListener {
+        fun finishedFragment()
     }
 }
