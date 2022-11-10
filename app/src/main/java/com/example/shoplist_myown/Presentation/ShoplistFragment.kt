@@ -132,7 +132,6 @@ class ShoplistFragment : Fragment() {
             }
         }
 
-
         fun newInstanseEditTem(shopitemID: Int): ShoplistFragment {
             return ShoplistFragment().apply {
                 arguments = Bundle().apply {
