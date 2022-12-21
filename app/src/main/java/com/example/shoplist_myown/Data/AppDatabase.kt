@@ -15,13 +15,15 @@ abstract class AppDatabase : RoomDatabase() {
         private var INSTANCE: AppDatabase? = null
         private const val DB_NAME = "dataBase.db"
 
-//        TODO если не будет работать сделать реализацию синглтона через double-check
+        //        TODO если не будет работать сделать реализацию синглтона через double-check
         @Synchronized
         fun getInstance(application: Application): AppDatabase {
             INSTANCE?.let {
                 return it
             }
-            val db = (Room.databaseBuilder(application, AppDatabase::class.java, DB_NAME)).build()
+            val db = (Room.databaseBuilder(application,
+                AppDatabase::class.java,
+                DB_NAME)).allowMainThreadQueries().build()
             INSTANCE = db
             return db
         }
