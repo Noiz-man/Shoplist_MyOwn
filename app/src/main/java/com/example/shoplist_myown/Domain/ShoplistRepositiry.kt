@@ -3,9 +3,9 @@ package com.example.shoplist_myown.Domain
 import androidx.lifecycle.LiveData
 
 interface ShoplistRepositiry {
-    fun addShopitem(item: Shopitem)
-    fun deleteShopitem(item: Shopitem)
-    fun editShopitem(item: Shopitem)
-    fun getShopitemByID(id: Int): Shopitem
+    suspend fun addShopitem(item: Shopitem)
+    suspend fun deleteShopitem(item: Shopitem)
+    suspend fun editShopitem(item: Shopitem)
+    suspend fun getShopitemByID(id: Int): Shopitem
     fun getShoplist(): LiveData<List<Shopitem>>
 }

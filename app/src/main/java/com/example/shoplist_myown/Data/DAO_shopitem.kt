@@ -13,12 +13,12 @@ interface DAO_shopitem {
     fun getShopListDb(): LiveData<List<ShopItemDbModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addShopItemDb(shopItemDbModel: ShopItemDbModel)
+    suspend fun addShopItemDb(shopItemDbModel: ShopItemDbModel)
 
 //    TODO попробовать сдеать аннотацию @Delete
     @Query("DELETE FROM shopItems_db WHERE id=:shopItemDbID")
-    fun deleteShopItemDb(shopItemDbID: Int)
+    suspend fun deleteShopItemDb(shopItemDbID: Int)
 
     @Query("SELECT * FROM shopItems_db WHERE id=:shopItemDbID LIMIT 1")
-    fun getShopItemByID(shopItemDbID: Int): ShopItemDbModel
+    suspend fun getShopItemByID(shopItemDbID: Int): ShopItemDbModel
 }
