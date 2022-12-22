@@ -1,16 +1,20 @@
 package com.example.shoplist_myown.Presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.shoplist_myown.Data.ShoplistRepositoryImpl
 import com.example.shoplist_myown.Domain.DeleteShopitemUseCase
 import com.example.shoplist_myown.Domain.EditShopitemUseCase
 import com.example.shoplist_myown.Domain.GetShoplistUseCase
 import com.example.shoplist_myown.Domain.Shopitem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class ShoplistViewModel: ViewModel() {
-    private val repositiry = ShoplistRepositoryImpl
+class ShoplistViewModel(application: Application): AndroidViewModel(application) {
+    private val repositiry = ShoplistRepositoryImpl(application)
 
 
     val deleteShopitemUseCase = DeleteShopitemUseCase(repositiry)
@@ -20,11 +24,15 @@ class ShoplistViewModel: ViewModel() {
     val shoplist = getShoplistUseCase.getShoplist()
 
     fun deleteShopitem(item: Shopitem) {
-        deleteShopitemUseCase.deleteShopitem(item)
+        viewModelScope.launch {
+            deleteShopitemUseCase.deleteShopitem(item)
+        }
     }
 
     fun editShopitemState(item: Shopitem) {
         val newItem = item.copy(state = !item.state)
-        editShopitemUseCase.editShopitem(newItem)
+        viewModelScope.launch {
+            editShopitemUseCase.editShopitem(newItem)
+        }
     }
 }

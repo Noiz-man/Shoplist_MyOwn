@@ -1,13 +1,16 @@
 package com.example.shoplist_myown.Presentation
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.*
 import com.example.shoplist_myown.Data.ShoplistRepositoryImpl
 import com.example.shoplist_myown.Domain.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class NewShopitemViewModel: ViewModel() {
-    private val repositiry = ShoplistRepositoryImpl
+class NewShopitemViewModel(application: Application): AndroidViewModel(application) {
+    private val repositiry = ShoplistRepositoryImpl(application)
 
     val addShopitemUseCase = AddShopitemUseCase(repositiry)
     val editShopitemUseCase = EditShopitemUseCase(repositiry)
@@ -33,9 +36,11 @@ class NewShopitemViewModel: ViewModel() {
         val name = parseInputName(inputName)
         val count = parseInputCount(inputCount)
         if (validData(name, count)) {
-            val item = Shopitem(name, count, true)
-            addShopitemUseCase.addShopitem(item)
-            closeWindow()
+            viewModelScope.launch {
+                val item = Shopitem(name, count, true)
+                addShopitemUseCase.addShopitem(item)
+                closeWindow()
+            }
         }
     }
 
@@ -44,16 +49,20 @@ class NewShopitemViewModel: ViewModel() {
         val count = parseInputCount(inputCount)
         if (validData(name, count)) {
             _shopitem.value?.let {
-                val item = it.copy(name = name, count = count)
-                editShopitemUseCase.editShopitem(item)
-                closeWindow()
+                viewModelScope.launch {
+                    val item = it.copy(name = name, count = count)
+                    editShopitemUseCase.editShopitem(item)
+                    closeWindow()
+                }
             }
         }
     }
 
     fun getShopitemByID(id: Int) {
-        val item = getShopitemByIDUseCase.getShopitemByID(id)
-        _shopitem.value = item
+        viewModelScope.launch {
+            val item = getShopitemByIDUseCase.getShopitemByID(id)
+            _shopitem.value = item
+        }
     }
 
     private fun parseInputName(inputName: String?): String {
@@ -90,7 +99,6 @@ class NewShopitemViewModel: ViewModel() {
     }
 
     private fun closeWindow() {
-        _closeWindow.value = Unit
+        _closeWindow.value =Unit
     }
-
 }
